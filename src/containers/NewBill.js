@@ -18,18 +18,6 @@ export default class NewBill {
         const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
         const filePath = e.target.value.split(/\\/g)
         const fileName = filePath[filePath.length - 1]
-            // ajout d'une constante pour chzck les extensions requises lors du test
-        const extCheck = /(png|pnj|jpg)/g
-            /*La méthode pop() supprime le dernier élément d'un tableau et 
-              retourne cet élément. Cette méthode modifie la longueur du tableau.
-            */
-        const extension = file.name.split('.').pop();
-        /* ajout d'un test Si l'extension est valide
-           ajout de l'image autorisée sinon afficher 
-           un message d'erreur "(Veuillez choisir une image en (png|pnj|jpg)")
-        
-           */
-        //if(mettre le test en lowercase pour eviter les bugs)
         this.firestore
             .storage
             .ref(`justificatifs/${fileName}`)
