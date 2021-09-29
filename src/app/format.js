@@ -1,4 +1,7 @@
 export const formatDate = (dateStr) => {
+    // ajout d'une condition reverse 
+    //ainsi que d'une string vide pour pallier 
+    //aux erreurs de la base de donnée
     const explodate = dateStr.split("-")
     if (explodate[0].length == 2) {
         dateStr = explodate.reverse().join("-")
@@ -7,8 +10,6 @@ export const formatDate = (dateStr) => {
         return ""
     }
     const date = new Date(dateStr)
-    console.log("date==>", date)
-    console.log("date string==>", dateStr)
     const ye = new Intl.DateTimeFormat('fr', { year: 'numeric' }).format(date)
     const mo = new Intl.DateTimeFormat('fr', { month: 'short' }).format(date)
     const da = new Intl.DateTimeFormat('fr', { day: '2-digit' }).format(date)
