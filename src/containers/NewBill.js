@@ -14,23 +14,42 @@ export default class NewBill {
         this.fileName = null
         new Logout({ document, localStorage, onNavigate })
     }
-    handleChangeFile = e => {
-        const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
-        const filePath = e.target.value.split(/\\/g)
-        const fileName = filePath[filePath.length - 1]
-        this.firestore
-            .storage
-            .ref(`justificatifs/${fileName}`)
-            .put(file)
-            .then(snapshot => snapshot.ref.getDownloadURL())
-            .then(url => {
-                this.fileUrl = url
-                this.fileName = fileName
-            })
-    }
+
+    handleChangeFile = (e) => {
+            const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
+            const filePath = e.target.value.split(/\\/g)
+            const fileName = filePath[filePath.length - 1]
+
+            // check the right extensions's file
+            const validExtensions = /(png|jpg|jpeg)/g
+            const fileExtension = fileName.split(".").pop()
+            const matched = fileExtension.toLowerCase().match(validExtensions)
+            this.handleSaveToStorage(fileName, file, matched)
+        }
+        // function for save file
+    handleSaveToStorage = (fileName, file, matched) => {
+        if (this.firestore) {
+            this.firestore.storage
+                .ref(`justificatifs/${fileName}`)
+                .put(file)
+                .then((snapshot) => snapshot.ref.getDownloadURL())
+                .then((url) => {
+                    this.fileUrl = url;
+                    this.fileName = matched ? fileName : "invalid";
+                });
+        }
+    };
+
     handleSubmit = e => {
         e.preventDefault()
-        console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
+            //console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
+        if (this.fileName === "invalid") {
+            const msgError = this.document.createElement("span")
+            msgError.classList.add("frmError")
+            msgError.innerHTML = `Le fichier n'est pas valide. Extensions autorisées : .jpg,.jpeg,.png`
+            this.document.querySelector(`.js-proof`).appendChild(msgError)
+            return
+        }
         const email = JSON.parse(localStorage.getItem("user")).email
         const bill = {
             email,
